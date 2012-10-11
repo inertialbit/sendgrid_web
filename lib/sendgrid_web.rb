@@ -3,9 +3,19 @@ require "sendgrid_web/request"
 
 module SendgridWeb
 
-  def self.get resource, format=:json, &builder
+  def self.get resource, format=:json, &block
     Request.new do |request|
       request.verb = :get
+      request.resource = resource
+      request.format = format
+
+      yield request
+    end
+  end
+
+  def self.delete resource, format=:json, &block
+    Request.new do |request|
+      request.verb = :delete
       request.resource = resource
       request.format = format
 
