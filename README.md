@@ -68,10 +68,10 @@ or
 
 ### Running Manually
 
-    sendgrid_web get unsubscribes --with-date --days-ago 30 --after 2012-07-01 --before 2012-07-31 --limit 20 --offset 0 --email 'blah@test.com'
-    sendgrid_web delete unsubscribes --email 'blah@test.com'
-    sendgrid_web delete unsubscribes --after 2012-07-01 --before 2012-07-31
-    sendgrid_web get bounces --with-date --days-ago 30
+    $ sendgrid_web get unsubscribes --with-date --days-ago 30 --after 2012-07-01 --before 2012-07-31 --limit 20 --offset 0 --email 'blah@test.com'
+    $ sendgrid_web delete unsubscribes --email 'blah@test.com'
+    $ sendgrid_web delete unsubscribes --after 2012-07-01 --before 2012-07-31
+    $ sendgrid_web get bounces --with-date --days-ago 30
 
 ## Swapping HTTP libs
 
