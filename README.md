@@ -35,51 +35,37 @@ And per instance:
 
 ### Running Programmatically
 
-Bounces/Unsubscribes API components
+Reflect Faraday interface. Use methods for now; just looks cleaner.
 
-    params = {
-      :date => 1, # can only be set to 1 and if so then retrieves timestamp of bounced records
-      :days => 30, # number of days into past to retrieve records for (includes today)
-      :start_date => 2012-07-01, # look for records more recent than this date
-      :end_date => 2012-07-31, # look for records older than this date
-      :limit => 20,
-      :offset => 0,
-      :type => 'hard' or 'soft', # type of bounce to search for
-      :email => 'blah@test.com', # email address to search for
-    }
+    SendgridWeb.get(:unsubscribes, :xml) do |request|
+      request.option :timeout, 30
+      request.option :open_timeout, 30
+      request.header 'HTTP-HEADER', 'value'
 
-    SendgridWeb::Bounces.get(params)
-    SendgridWeb::Bounces.delete(params)
-    SendgridWeb::Bounces.count(params)
+      request.with_date # special to enforce api rule of required value of 1
 
-    SendgridWeb::Unsubscribes.get(params)
-    SendgridWeb::Unsubscribes.add(params)
-    SendgridWeb::Unsubscribes.delete(params)
+      request.param 'start_date', 2012-07-31
+      request.param 'email', 'me@test.com'
 
-or
-
-    SendgridWeb::Bounces.get.date!.days(30).after(2012-07-01).before(2012-07-31).limit(20).offset(0).type('hard').email('blah@test.com')
-    SendgridWeb::Bounces.delete.after(2012-07-01).before(2012-07-31).type('hard').email('blah@test.com')
-    SendgridWeb::Bounces.count.after(2012-07-01).before(2012-07-31).type('hard')
-
-    SendgridWeb::Unsubscribes.get.date!.days(30).after(2012-07-01).before(2012-07-31).limit(20).offset(0).email('blah@test.com')
-    SendgridWeb::Unsubscribes.delete.after(2012-07-01).before(2012-07-31).email('blah@test.com')
-    SendgridWeb::Unsubscribes.add.email('blah@test.com')
+      request.on_complete do |response|
+        response.status
+        response.body
+      end
+    end
 
 ### Running Manually
 
-    $ sendgrid_web get unsubscribes --with-date --days-ago 30 --after 2012-07-01 --before 2012-07-31 --limit 20 --offset 0 --email 'blah@test.com'
-    $ sendgrid_web delete unsubscribes --email 'blah@test.com'
-    $ sendgrid_web delete unsubscribes --after 2012-07-01 --before 2012-07-31
-    $ sendgrid_web get bounces --with-date --days-ago 30
+not implemented yet!!
 
-## Swapping HTTP libs
+    $ sendgrid_web get unsubscribes --with-date --days 30 --start_date 2012-07-01 --end_date 2012-07-31 --limit 20 --offset 0 --email 'blah@test.com'
+    $ sendgrid_web delete unsubscribes.xml --email 'blah@test.com'
+    $ sendgrid_web delete unsubscribes.json --after 2012-07-01 --before 2012-07-31
+    $ sendgrid_web get bounces --with-date --days-ago 30 # default is json
 
-Would be nice to have ability to transparently swap HTTP lib.
+## Todo
 
-    SendgridWeb.configure do |config|
-      config.http_library = :boss
-    end
+- expose Faraday config for swappable http client libs
+- CLI
 
 ## Contributing
 
