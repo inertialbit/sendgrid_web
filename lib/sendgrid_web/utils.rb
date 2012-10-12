@@ -12,8 +12,8 @@ module SendgridWeb
       parts.join('/')
     end
     def param(param)
-      @params ||= []
-      @params << param
+      @params ||= {}
+      @params.merge!(param)
     end
     def with_date
       param(:date => 1)

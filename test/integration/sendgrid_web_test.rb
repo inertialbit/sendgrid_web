@@ -17,27 +17,24 @@ class SendgridWebTest < Test::Unit::TestCase
       config.api_key = 'secret'
     end
 
-    SendgridWeb.get(:unsubscribes, :json) do |request|
-
+    response = SendgridWeb.get(:unsubscribes, :json) do |request|
       request.with_date # special to enforce api rule of required value of 1
 
       request.param :start_date => start_date
       request.param :email => email
+    end
 
-      request.on_complete do |response|
-        generated_url = response.env[:url]
+    generated_url = response.env[:url]
 
-        %w(scheme host path).each do |part|
-          assert_equal(expected_url.send(part), generated_url.send(part), "generated #{part} didn't match expected")
-        end
+    %w(scheme host path).each do |part|
+      assert_equal(expected_url.send(part), generated_url.send(part), "generated #{part} didn't match expected")
+    end
 
-        generated_query = normalize_query(generated_url)
-        expected_query = normalize_query(expected_url)
+    generated_query = normalize_query(generated_url)
+    expected_query = normalize_query(expected_url)
 
-        expected_query.each do |param|
-          assert(generated_query.include?(param), "generated query missing #{param.inspect}")
-        end
-      end
+    expected_query.each do |param|
+      assert(generated_query.include?(param), "generated query missing #{param.inspect}")
     end
   end
 
@@ -50,23 +47,21 @@ class SendgridWebTest < Test::Unit::TestCase
       config.api_key = 'secret'
     end
 
-    SendgridWeb.delete(:unsubscribes, :json) do |request|
+    response = SendgridWeb.delete(:unsubscribes, :json) do |request|
       request.param :email => email
+    end
 
-      request.on_complete do |response|
-        generated_url = response.env[:url]
+    generated_url = response.env[:url]
 
-        %w(scheme host path).each do |part|
-          assert_equal(expected_url.send(part), generated_url.send(part), "generated #{part} didn't match expected")
-        end
+    %w(scheme host path).each do |part|
+      assert_equal(expected_url.send(part), generated_url.send(part), "generated #{part} didn't match expected")
+    end
 
-        generated_query = normalize_query(generated_url)
-        expected_query = normalize_query(expected_url)
+    generated_query = normalize_query(generated_url)
+    expected_query = normalize_query(expected_url)
 
-        expected_query.each do |param|
-          assert(generated_query.include?(param), "generated query missing #{param.inspect}")
-        end
-      end
+    expected_query.each do |param|
+      assert(generated_query.include?(param), "generated query missing #{param.inspect}")
     end
   end
 end

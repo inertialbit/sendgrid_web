@@ -3,24 +3,33 @@ require "sendgrid_web/request"
 
 module SendgridWeb
 
+  Faraday.register_middleware :request, :api => lambda { API }
+
   def self.get resource, format=:json, &block
-    Request.new do |request|
+    Request.configure do |request|
       request.verb = :get
       request.resource = resource
       request.format = format
 
       yield request
     end
+    process
   end
 
   def self.delete resource, format=:json, &block
-    Request.new do |request|
+    Request.configure do |request|
       request.verb = :delete
       request.resource = resource
       request.format = format
 
       yield request
     end
+    process
+  end
+
+  def self.process
+    url = URI.join(Request.url, Request.url_action).to_s
+    Faraday.get(url, Request.params, Request.headers)
   end
 
   class << self
