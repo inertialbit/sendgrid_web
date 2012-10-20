@@ -18,39 +18,32 @@ Or install it yourself as:
 
 ## Usage
 
-I think something like the following would be nice.
+Something like the following would be nice.
 
 ### Configuration
-
-For global situations:
 
     SendgridWeb.configure do |config|
       config.api_user = 'sendgrid-user'
       config.api_key = 'sendgrid-secret'
     end
 
-And per instance:
-
-    SendgridWeb.configure :api_user => 'sendgrid-user', :api_key => 'sendgrid-secret'
-
 ### Running Programmatically
 
-Reflect Faraday interface. Use methods for now; just looks cleaner.
-
-    SendgridWeb.get(:unsubscribes, :xml) do |request|
-      request.option :timeout, 30
-      request.option :open_timeout, 30
-      request.header 'HTTP-HEADER', 'value'
+    response = SendgridWeb.unsubscribes(:get, :xml) do |request|
+      request.option :timeout => 30
+      request.option :open_timeout => 30
+      request.header 'HTTP-HEADER' => 'value'
 
       request.with_date # special to enforce api rule of required value of 1
 
-      request.param 'start_date', 2012-07-31
-      request.param 'email', 'me@test.com'
+      request.param 'start_date' => 2012-07-31
+      request.param 'email' => 'me@test.com'
+    end
 
-      request.on_complete do |response|
-        response.status
-        response.body
-      end
+    if response.success?
+      # do stuff...
+    else
+      # do other stuff...
     end
 
 ### Running Manually
@@ -64,7 +57,8 @@ not implemented yet!!
 
 ## Todo
 
-- expose Faraday config for swappable http client libs
+- more tests
+- implement as Faraday middleware (support async calls)
 - CLI
 
 ## Contributing

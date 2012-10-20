@@ -13,7 +13,5 @@ if defined? Rake::TestTask
       t.pattern = "#{SENDGRID_WEB_ROOT}/test/**/*_test.rb"
       t.verbose = true
     end
-    Rake::Task['test:sendgrid_web'].comment = "Run the tests for SendgridWeb."
-    # task :sendgrid_web => :environment
   end
 end

@@ -1,3 +1,5 @@
 #!/usr/bin/env ruby
 
 require 'sendgrid_web'
+
+raise "TODO: implement CLI"

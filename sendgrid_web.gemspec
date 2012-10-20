@@ -7,9 +7,9 @@ Gem::Specification.new do |gem|
   gem.name          = "sendgrid_web"
   gem.version       = SendgridWeb::VERSION
   gem.authors       = ["Jeremiah Heller"]
-  gem.email         = ["ib.jeremiah@gmail.com"]
+  gem.email         = ["jeremiah@inertialbit.net"]
   gem.description   = %q{Ruby interface for working with SendGrid's Web (HTTP) API. Read more at http://docs.sendgrid.com/documentation/api/web-api/.}
-  gem.summary       = %q{Provides CLI and API and works on ruby 1.8.7, 1.9.2, 1.9.3 and rack.}
+  gem.summary       = %q{Wraps SendGrid Web API and works with rack on ruby 1.8.7, 1.9.2, 1.9.3.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)

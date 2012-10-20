@@ -14,6 +14,11 @@ module SendgridWeb
       attr_accessor :headers, :options, :callbacks
       include URL
 
+      ##
+      #
+      # Configure a Request. +@options+ and +@headers+ are
+      # passed through to Faraday.
+      #
       def configure &block
         @callbacks = {}
         @headers = []
