@@ -2,6 +2,8 @@
 
 Ruby interface for working with SendGrid's Web (HTTP) API. Read more at http://docs.sendgrid.com/documentation/api/web-api/.
 
+## Build Status {<img src="https://secure.travis-ci.org/inertialbit/sendgrid_web.png"/>}[http://travis-ci.org/inertialbit/sendgrid_web]
+
 ## Installation
 
 Add this line to your application's Gemfile:
