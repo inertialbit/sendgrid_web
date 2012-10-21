@@ -1,13 +1,21 @@
 module SendgridWeb
   ##
   #
-  # Utility to assemble a URL for Sendgrid.
+  # Assembles a URL for Sendgrid.
   #
   module URL
-    attr_accessor :url, :params, :format, :resource, :verb
+    attr_accessor :format, :resource, :verb
+
+    def uri
+      URI.join(url, url_action).to_s
+    end
 
     def url
       @url ||= "#{SendgridWeb.scheme}://#{SendgridWeb.host}/"
+    end
+
+    def params
+      @params ||= {}
     end
 
     # Returns action portion of Sendgrid URL, e.g.
@@ -22,8 +30,7 @@ module SendgridWeb
     # Add or overwrite a param in +@params+ hash.
     # These are passed through to Faraday.
     def param(param)
-      @params ||= {}
-      @params.merge!(param)
+      params.merge!(param)
     end
 
     # Convenience method to add param with

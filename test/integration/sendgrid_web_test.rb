@@ -4,63 +4,69 @@ require 'uri'
 require 'sendgrid_web'
 
 class SendgridWebTest < Test::Unit::TestCase
-  def self.sendgrid_modules
-    [
-      {:bounces => [:get, :delete]},
-      {:blocks => [:get, :delete]},
-      {:parse => [:get, :set, :edit, :delete]},
-      {:filter => [:get, :activate, :deactivate, :setup, :getsettings]},
-      {:invalidemails => [:get, :delete]},
-      {:mail => [:send]},
-      {:profile => [:get, :set, :setUsername, :setPassword, :setEmail]},
-      {:spamreports => [:get, :delete]},
-      {:stats => [:get]},
-      {:unsubscribes => [:add, :get, :delete]}
-    ]
-  end
-
   def normalize_query(url)
     url.query.split('&').map{|pair| k,v = pair.split('='); {k.to_sym => CGI.unescape(v)}}
   end
 
-  sendgrid_modules.each do |sg_module|
-    define_method "test_#{sg_module}_wrapper" do
-      sg_module.each do |sg_module_name, sg_module_actions|
-        sg_module_actions.each do |action|
+  def valid_params
+    {
+      :api_user => 'user',
+      :api_key => 'secret',
+      :action => :get,
+      :sg_module_name => :blocks,
+      :start_date =>  '2012-07-31',
+      :email => 'me@test.com',
+      :format => :json,
+      :from => 'other@test.com',
+      :subject => 'watch it',
+      :text => 'a test message'
+    }
+  end
 
-          email = 'me@test.com'
-          start_date = '2012-07-31'
-          api_user = 'user'
-          api_key = 'secret'
-          expected_url = URI("https://sendgrid.com/api/#{sg_module_name}.#{action}.json?api_user=#{api_user}&api_key=#{api_key}&start_date=#{start_date}&email=#{email}")
+  def setup
+    SendgridWeb.configure do |config|
+      config.api_user = valid_params[:api_user]
+      config.api_key = valid_params[:api_key]
+    end
+  end
 
-          SendgridWeb.configure do |config|
-            config.api_user = api_user
-            config.api_key = api_key
-          end
+  def verify_url_generation(expected_url, response)
+    generated_url = response.env[:url]
 
-          response = SendgridWeb.send(sg_module_name, action, :json) do |request|
-            request.with_date # special to enforce api rule of required value of 1
+    %w(scheme host path).each do |part|
+      assert_equal(expected_url.send(part), generated_url.send(part), "generated #{part} didn't match expected")
+    end
 
-            request.param :start_date => start_date
-            request.param :email => email
-          end
+    generated_query = normalize_query(generated_url)
+    expected_query = normalize_query(expected_url)
 
-          generated_url = response.env[:url]
+    expected_query.each do |param|
+      assert(generated_query.include?(param), "generated query missing #{param.inspect}")
+    end
+  end
 
-          %w(scheme host path).each do |part|
-            assert_equal(expected_url.send(part), generated_url.send(part), "generated #{part} didn't match expected")
-          end
+  def test_mail_url_generation
+    expected_url = URI("https://sendgrid.com/api/mail.send.json?api_user=#{valid_params[:api_user]}&api_key=#{valid_params[:api_key]}&to=#{valid_params[:email]}&subject=#{CGI.escape(valid_params[:subject])}&from=#{valid_params[:from]}&text=#{CGI.escape(valid_params[:text])}")
 
-          generated_query = normalize_query(generated_url)
-          expected_query = normalize_query(expected_url)
+    response = SendgridWeb.mail(:send, :json) do |request|
+      request.param :to => valid_params[:email], :from => valid_params[:from]
+      request.param :subject => valid_params[:subject]
+      request.param :text => valid_params[:text]
+    end
 
-          expected_query.each do |param|
-            assert(generated_query.include?(param), "generated query missing #{param.inspect}")
-          end
+    verify_url_generation(expected_url, response)
+  end
 
-        end # sg_module_actions#each
-      end # sg_module#each
-    end # define_method
-  end # sendgrid_modules#each
+  def test_bounces_url_generation
+    expected_url = URI("https://sendgrid.com/api/bounces.get.json?api_user=#{valid_params[:api_user]}&api_key=#{valid_params[:api_key]}&start_date=#{valid_params[:start_date]}&email=#{valid_params[:email]}")
+
+    response = SendgridWeb.bounces(:get, :json) do |request|
+      request.param :start_date => valid_params[:start_date]
+      request.param :email => valid_params[:email]
+    end
+
+    verify_url_generation(expected_url, response)
+  end
+
+
 end # SendgridWebTest

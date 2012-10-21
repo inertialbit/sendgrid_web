@@ -34,7 +34,7 @@ module SendgridWeb
       request.resource = resource
       request.format = format
 
-      yield request
+      yield request if block_given?
     end
     process
   end
@@ -50,8 +50,7 @@ module SendgridWeb
 private
 
   def self.process
-    url = URI.join(Request.url, Request.url_action).to_s
-    Faraday.get(url, Request.params, Request.headers)
+    Faraday.get(Request.uri, Request.params, Request.headers)
   end
 end
 

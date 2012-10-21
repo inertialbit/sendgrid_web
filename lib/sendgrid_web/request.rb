@@ -11,19 +11,14 @@ end
 module SendgridWeb
   module Request
     class << self
-      attr_accessor :headers, :options, :callbacks
       include URL
 
       ##
       #
       # Configure a Request. +@options+ and +@headers+ are
-      # passed through to Faraday.
+      # passed through to Faraday, as are +@params+ provided by +URL+.
       #
       def configure &block
-        @callbacks = {}
-        @headers = []
-        @options = []
-
         unless SendgridWeb.api_user.nil? or SendgridWeb.api_key.nil?
           param(:api_user => SendgridWeb.api_user)
           param(:api_key => SendgridWeb.api_key)
@@ -33,13 +28,19 @@ module SendgridWeb
       end
 
       def option(option)
+        options.merge!(option)
+      end
+
+      def options
         @options ||= {}
-        @options.merge!(option)
       end
 
       def header(header)
+        headers.merge!(header)
+      end
+
+      def headers
         @headers ||= {}
-        @headers.merge!(header)
       end
     end
   end
